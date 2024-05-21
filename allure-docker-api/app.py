@@ -16,7 +16,7 @@ import zipfile
 import waitress
 from werkzeug.utils import secure_filename
 from flask import (
-    Flask, jsonify, render_template, redirect,
+    Flask, Request, jsonify, render_template, redirect,
     request, send_file, send_from_directory, make_response, url_for
 )
 from flask.logging import create_logger
@@ -62,7 +62,13 @@ class UserAccess:
     def __str__(self):
         return self.__class__.__name__
 
+class CustomRequest(Request):
+    def __init__(self, *args, **kwargs):
+        super(CustomRequest, self).__init__(*args, **kwargs)
+        self.max_form_parts = 2000
+
 app = Flask(__name__) #pylint: disable=invalid-name
+app.request_class = CustomRequest
 
 LOGGER = create_logger(app)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
